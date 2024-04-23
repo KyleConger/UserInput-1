@@ -1,0 +1,57 @@
+import sys
+import re
+import os
+from io import StringIO
+
+class UserInputKC:
+
+    def get_user_input(prompt):
+        result = ''
+        while len(result) == 0:
+            result = input(prompt + ': ').strip()
+        return result
+
+    def get_file_input(prompt, args):
+        if len(args) > 1:
+            # If there is a command line argument, use it as the file path
+            # Also ensure to strip external quotes:
+            return args[1].strip('\'"')  # This removes any single or double quotes surrounding the argument
+        else:
+            result = ''
+            while len(result) == 0:
+                try:
+                    result = input(prompt + ': ').strip()
+                    if len(result) == 0:
+                        print("No input provided. Please enter a valid file path.")
+                except EOFError:
+                    print("End of File encountered while expecting a file path input.")
+                    sys.exit("Script terminated due to lack of input.")
+            # Remove surrounding quotes if entered manually in the prompt:
+            return result.strip('\'"')
+
+    def get_yn_input(prompt, validate_yn=False):
+        while True:
+            try:
+                result = input(prompt + ': ').strip()
+                if validate_yn:
+                    if result in ['Y', 'N']:
+                        return result
+                    else:
+                        print("Invalid input. Please answer with 'Y' or 'N'.")
+                else:
+                    return result
+            except EOFError:
+                print("End of File encountered. Assuming default value.")
+                return "N" if validate_yn else ""
+
+    def get_multiline_input(prompt):
+        print(prompt)
+        lines = []
+        while True:
+            try:
+                line = input()
+            except EOFError:
+                break
+            lines.append(line.strip())
+        return ' '.join(lines)
+    # For some reason, this needs to be last or it calls multiple times. I'm not sure how to fix it but it should be fine
